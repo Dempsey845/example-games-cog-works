@@ -180,7 +180,6 @@ def setup_pong_scene(engine):
     player_collider = TriggerCollider(shape="rect")
     player_paddle.add_component(player_collider)
     scene.add_game_object(player_paddle)
-    scene.trigger_collision_manager.register(player_collider)
 
     # --- AI Paddle ---
     ai_paddle = GameObject("AIPaddle")
@@ -192,7 +191,6 @@ def setup_pong_scene(engine):
     ai_collider = TriggerCollider(shape="rect")
     ai_paddle.add_component(ai_collider)
     scene.add_game_object(ai_paddle)
-    scene.trigger_collision_manager.register(ai_collider)
 
     # --- Score Labels (UI, relative, no zoom) ---
     player_score = GameObject("PlayerScore")
@@ -215,7 +213,6 @@ def setup_pong_scene(engine):
     ball_collider = TriggerCollider(shape="circle")
     ball.add_component(ball_collider)
     scene.add_game_object(ball)
-    scene.trigger_collision_manager.register(ball_collider)
 
     # AI references the ball
     ai_script.ball = ball

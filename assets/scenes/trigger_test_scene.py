@@ -53,7 +53,6 @@ def setup_trigger_test_scene(engine):
     player_collider = TriggerCollider(shape="rect", debug=True, layer="Player", layer_mask=["Shape"])
     player.add_component(player_collider)
     scene.add_game_object(player)
-    scene.trigger_collision_manager.register(player_collider)
 
     # Shape area
     shape = GameObject("ShapeArea")
@@ -63,7 +62,6 @@ def setup_trigger_test_scene(engine):
     shape_collider = TriggerCollider(shape="rect", debug=True, layer="Shape", layer_mask=["Player"])
     shape.add_component(shape_collider)
     scene.add_game_object(shape)
-    scene.trigger_collision_manager.register(shape_collider)
 
     shape2 = GameObject("ShapeArea2")
     shape2.add_component(Sprite("images/shape.png"))
@@ -72,7 +70,6 @@ def setup_trigger_test_scene(engine):
     shape2_collider = TriggerCollider(shape="rect", debug=True, layer="Shape2", layer_mask=["Shape"])
     shape2.add_component(shape2_collider)
     scene.add_game_object(shape2)
-    scene.trigger_collision_manager.register(shape2_collider)
 
     # --- Exit Button ---
     def exit_scene(go):
