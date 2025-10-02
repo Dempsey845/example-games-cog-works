@@ -15,6 +15,9 @@ def setup_menu_scene(engine):
     def start_pong(go):
         engine.change_active_scene("Pong")
 
+    def start_trigger_test(go):
+        engine.change_active_scene("TriggerTest")
+
     def exit_game(go):
         engine.quit()
 
@@ -33,7 +36,7 @@ def setup_menu_scene(engine):
     # Label
     title_label = GameObject("TitleLabel")
     title_label.add_component(UITransform(width=1, height=0.1))
-    title_label.add_component(UILabel("Cog Works Engine", bg_color=(0, 0, 0), border_radius=20))
+    title_label.add_component(UILabel("Cog Works Engine Examples", bg_color=(0, 0, 0), border_radius=20))
     layout.add_child(title_label)
 
     # Add buttons
@@ -46,6 +49,11 @@ def setup_menu_scene(engine):
     physics_btn.add_component(UITransform(width=1, height=0.1))
     physics_btn.add_component(UIButton("Play Physics Example", on_click=start_physics, border_radius=20))
     layout.add_child(physics_btn)
+
+    trigger_btn = GameObject("TriggerButton")
+    trigger_btn.add_component(UITransform(width=1, height=0.1))
+    trigger_btn.add_component(UIButton("Play Trigger Example", on_click=start_trigger_test, border_radius=20))
+    layout.add_child(trigger_btn)
 
     exit_btn = GameObject("ExitButton")
     exit_btn.add_component(UITransform(width=1, height=0.1))
