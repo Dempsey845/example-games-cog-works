@@ -16,6 +16,7 @@ def setup_menu_scene(engine):
         engine.set_active_scene("Pong")
 
     def start_snake(go):
+        print("Starting snake game")
         engine.set_active_scene("SnakeGame")
 
     def start_trigger_test(go):

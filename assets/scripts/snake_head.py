@@ -14,15 +14,21 @@ from assets.scripts.snake_body_part import SnakeBodyPart
 class SnakeHead(ScriptComponent):
     def __init__(self, grid, move_interval: float = 0.1):
         super().__init__()
+        self.camera = None
+        self.sprite = None
+        self.input_manager = None
+        self.body_parts = None
+        self.position_history = None
+        self.can_move = None
+        self.move_timer = None
+        self.move_direction = None
         self.move_interval = move_interval
         self.grid = grid
 
+    def start(self):
         self.move_direction = (0, 0)
         self.move_timer = 0
         self.can_move = True
-
-        self.sprite = None
-        self.camera = None
 
         # store world positions that body parts will follow
         self.position_history = deque(maxlen=5000)
@@ -30,20 +36,18 @@ class SnakeHead(ScriptComponent):
         self.body_parts = []
         self.input_manager = InputManager.get_instance()
 
-    def start(self):
         self.sprite = self.game_object.get_component(Sprite)
         self.camera = self.game_object.scene.camera_component
-        # When we add a component we should tell that component whether it was added in start so that
-        # we can use this in scene_manager to prevent saying a copy of it
+
         self.game_object.add_component(
-            TriggerCollider(layer="Head", layer_mask=["BodyPart", "Apple"], debug=True), runtime=True
+            TriggerCollider(layer="Head", layer_mask=["BodyPart", "Apple"], debug=False)
         )
         x, y = self.grid.get_random_point_in_grid_cell()
         self.game_object.transform.set_local_position(x, y)
 
         self.add_new_apple()
 
-        for _ in range(3):
+        for _ in range(1):
             self.add_body_part()
 
     def update(self, dt):
@@ -105,25 +109,22 @@ class SnakeHead(ScriptComponent):
             self.on_game_over()
 
     def add_new_apple(self):
-        apple = GameObject("Apple")
-
         x, y = self.grid.get_random_point_in_grid_cell()
+        apple = GameObject("Apple", x=x, y=y, scale_x=0.5, scale_y=0.5)
 
-        apple.transform.set_world_position(x, y)
-        apple.transform.set_local_scale(0.5)
         apple.add_component(Apple())
-        self.game_object.scene.add_game_object(apple)
+        self.game_object.scene.instantiate_game_object(apple)
 
     def add_body_part(self):
-        body_part = GameObject("BodyPart")
+        x, y = self.game_object.transform.get_world_position()
+        body_part = GameObject("BodyPart", x=x, y=y)
         script = SnakeBodyPart(head=self, sprite_image_path="images/snake_part.png")
         body_part.add_component(script)
         self.game_object.add_child(body_part)
 
-        # start at head position
-        body_part.transform.set_world_position(*self.game_object.transform.get_world_position())
         self.body_parts.append(body_part)
 
     def on_game_over(self):
-        self.move_direction = (0, 0)
-        self.can_move = False
+        if self.move_direction != (0, 0):
+            self.move_direction = (0, 0)
+            self.can_move = False

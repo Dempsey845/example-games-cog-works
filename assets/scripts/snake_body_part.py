@@ -28,8 +28,7 @@ class SnakeBodyPart(ScriptComponent):
 
         if self.timer > self.collision_start_delay:
             self.game_object.add_component(
-                TriggerCollider(layer=self.layer, layer_mask=["Head"], debug=True),
-                runtime=True
+                TriggerCollider(layer=self.layer, layer_mask=["Head"], debug=False),
             )
             self.has_collider = True
 

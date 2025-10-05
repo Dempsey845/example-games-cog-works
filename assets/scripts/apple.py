@@ -9,4 +9,4 @@ class Apple(ScriptComponent):
 
     def start(self) -> None:
         self.game_object.add_component(Sprite("images/apple.png"))
-        self.game_object.add_component(TriggerCollider(layer="Apple", layer_mask=["Head"], debug=True))
+        self.game_object.add_component(TriggerCollider(layer="Apple", layer_mask=["Head"], debug=False))

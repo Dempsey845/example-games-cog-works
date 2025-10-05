@@ -46,26 +46,24 @@ def setup_trigger_test_scene(engine):
     window_width, window_height = Window.get_instance().get_size()
 
     # Player
-    player = GameObject("Player")
+    player = GameObject("Player", x=window_width // 4, y=window_height // 2)
+    player.transform.debug = True
     player.add_component(Sprite("images/player.png"))
-    player.get_component(Transform).set_local_position(window_width // 4, window_height // 2)
     player.add_component(SimplePlayerScript())
     player_collider = TriggerCollider(shape="rect", debug=True, layer="Player", layer_mask=["Shape"])
     player.add_component(player_collider)
     scene.add_game_object(player)
 
     # Shape area
-    shape = GameObject("ShapeArea")
+    shape = GameObject("ShapeArea", x=window_width * 3 // 4, y=window_height // 2)
     shape.add_component(Sprite("images/shape.png"))
-    shape.get_component(Transform).set_local_position(window_width * 3 // 4, window_height // 2)
     shape.add_component(PrintOnTriggerScript())
     shape_collider = TriggerCollider(shape="rect", debug=True, layer="Shape", layer_mask=["Player"])
     shape.add_component(shape_collider)
     scene.add_game_object(shape)
 
-    shape2 = GameObject("ShapeArea2")
+    shape2 = GameObject("ShapeArea2", x=window_width * 3 // 4, y=window_height)
     shape2.add_component(Sprite("images/shape.png"))
-    shape2.get_component(Transform).set_local_position(window_width * 3 // 4, window_height)
     shape2.add_component(PrintOnTriggerScript())
     shape2_collider = TriggerCollider(shape="rect", debug=True, layer="Shape2", layer_mask=["Shape"])
     shape2.add_component(shape2_collider)

@@ -26,6 +26,8 @@ class CameraController(ScriptComponent):
         """
         super().__init__()
         self.target_transform = target_transform
+        self.start_offset_x = offset_x
+        self.start_offset_y = offset_y
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.smoothing = smoothing
@@ -34,6 +36,8 @@ class CameraController(ScriptComponent):
 
     def start(self):
         self.camera_component = self.game_object.scene.camera_component
+        self.offset_x = self.start_offset_x
+        self.offset_y = self.start_offset_y
 
     def update(self, dt: float) -> None:
         if not self.fixed:

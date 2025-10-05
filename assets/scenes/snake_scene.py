@@ -23,6 +23,7 @@ def setup_snake_scene(engine):
 
     # --- Exit Button ---
     def exit_scene(go):
+        print("Exiting")
         engine.set_active_scene("Menu")
 
     exit_btn = GameObject("ExitButton")

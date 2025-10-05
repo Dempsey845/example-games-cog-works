@@ -39,7 +39,7 @@ class PlayerPaddleScript(ScriptComponent):
         self.transform = self.game_object.transform
         self.camera = self.game_object.scene.camera_component
         start_x, start_y = self.camera.get_world_position_of_point("leftcenter")
-        self.transform.set_local_position(start_x + PADDLE_X_OFFSET, start_y, is_start_position=True)
+        self.transform.set_local_position(start_x + PADDLE_X_OFFSET, start_y)
 
     def update(self, dt):
         x, y = self.transform.get_local_position()
@@ -67,7 +67,7 @@ class AIPaddleScript(ScriptComponent):
         self.transform = self.game_object.transform
         self.camera = self.game_object.scene.camera_component
         start_x, start_y = self.camera.get_world_position_of_point("rightcenter",)
-        self.transform.set_local_position(start_x - PADDLE_X_OFFSET, start_y, is_start_position=True)
+        self.transform.set_local_position(start_x - PADDLE_X_OFFSET, start_y)
 
     def update(self, dt):
         if not self.ball:
@@ -101,7 +101,7 @@ class BallScript(ScriptComponent):
         self.transform = self.game_object.transform
         self.camera = self.game_object.scene.camera_component
         start_x, start_y = self.camera.get_world_position_of_point("center")
-        self.transform.set_local_position(start_x, start_y, is_start_position=True)
+        self.transform.set_local_position(start_x, start_y)
         self.reset_ball()
 
     def reset_ball(self):

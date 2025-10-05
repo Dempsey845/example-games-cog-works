@@ -7,7 +7,7 @@ from assets.scenes.trigger_test_scene import setup_trigger_test_scene
 
 
 WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 800
+WINDOW_HEIGHT = 600
 
 engine = Engine(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, fps=500)
 
