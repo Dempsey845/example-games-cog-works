@@ -10,13 +10,16 @@ def setup_menu_scene(engine):
     menu_scene = engine.create_scene("Menu")
 
     def start_physics(go):
-        engine.change_active_scene("Physics")
+        engine.set_active_scene("Physics")
 
     def start_pong(go):
-        engine.change_active_scene("Pong")
+        engine.set_active_scene("Pong")
+
+    def start_snake(go):
+        engine.set_active_scene("SnakeGame")
 
     def start_trigger_test(go):
-        engine.change_active_scene("TriggerTest")
+        engine.set_active_scene("TriggerTest")
 
     def exit_game(go):
         engine.quit()
@@ -44,6 +47,11 @@ def setup_menu_scene(engine):
     pong_btn.add_component(UITransform(width=1, height=0.1))
     pong_btn.add_component(UIButton("Play Pong", on_click=start_pong, border_radius=20))
     layout.add_child(pong_btn)
+
+    snake_btn = GameObject("SnakeButton")
+    snake_btn.add_component(UITransform(width=1, height=0.1))
+    snake_btn.add_component(UIButton("Play Snake", on_click=start_snake, border_radius=20))
+    layout.add_child(snake_btn)
 
     physics_btn = GameObject("PhysicsButton")
     physics_btn.add_component(UITransform(width=1, height=0.1))

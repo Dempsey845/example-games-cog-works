@@ -37,7 +37,7 @@ def setup_physics_scene(engine):
 
     # --- Game Buttons ---
     def exit_game(go):
-        engine.change_active_scene("Menu")
+        engine.set_active_scene("Menu")
 
     exit_btn = GameObject("ExitButton", 5)
     exit_btn.add_component(UITransform(width=0.2, height=0.05, y=0.02, x=0.98, anchor="topright"))
@@ -70,7 +70,7 @@ def setup_physics_scene(engine):
     circle_container = GameObject("Circle Container")
     main_scene.add_game_object(circle_container)
 
-    for i in range(100):
+    for i in range(5000):
         circle = GameObject(f"Circle{i}")
         circle.add_component(Sprite("images/football.png"))
         circle.add_component(
@@ -90,8 +90,9 @@ def setup_physics_scene(engine):
     # --- Floor ---
     floor = GameObject("Floor")
     floor_transform = floor.get_component(Transform)
-    floor_transform.set_local_scale(5)
-    floor_transform.set_local_rotation(0)
+    floor_transform.set_local_scale(4)
+    floor_transform.set_local_rotation(25)
+
 
     floor_sprite = Sprite("images/floor.png")
     floor.add_component(floor_sprite)

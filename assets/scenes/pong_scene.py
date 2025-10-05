@@ -11,7 +11,6 @@ from cogworks.components.ui.ui_button import UIButton
 from cogworks.components.ui.ui_label import UILabel
 from cogworks.components.ui.ui_transform import UITransform
 from cogworks.pygame_wrappers.input_manager import InputManager
-from cogworks.pygame_wrappers.window import Window
 
 # --- Constants ---
 BALL_SPEED = 250
@@ -19,6 +18,7 @@ BALL_ACCELERATION = 200
 PADDLE_SPEED = 400
 PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
+PADDLE_X_OFFSET = 50
 BALL_SIZE = 20
 
 # --- Helper Functions ---
@@ -38,6 +38,8 @@ class PlayerPaddleScript(ScriptComponent):
     def start(self):
         self.transform = self.game_object.transform
         self.camera = self.game_object.scene.camera_component
+        start_x, start_y = self.camera.get_world_position_of_point("leftcenter")
+        self.transform.set_local_position(start_x + PADDLE_X_OFFSET, start_y, is_start_position=True)
 
     def update(self, dt):
         x, y = self.transform.get_local_position()
@@ -64,6 +66,8 @@ class AIPaddleScript(ScriptComponent):
     def start(self):
         self.transform = self.game_object.transform
         self.camera = self.game_object.scene.camera_component
+        start_x, start_y = self.camera.get_world_position_of_point("rightcenter",)
+        self.transform.set_local_position(start_x - PADDLE_X_OFFSET, start_y, is_start_position=True)
 
     def update(self, dt):
         if not self.ball:
@@ -96,11 +100,13 @@ class BallScript(ScriptComponent):
     def start(self):
         self.transform = self.game_object.transform
         self.camera = self.game_object.scene.camera_component
+        start_x, start_y = self.camera.get_world_position_of_point("center")
+        self.transform.set_local_position(start_x, start_y, is_start_position=True)
         self.reset_ball()
 
     def reset_ball(self):
-        window_width, window_height = Window.get_instance().get_size()
-        self.transform.set_local_position(window_width//2, window_height//2)
+        x, y = self.camera.get_world_position_of_point("center")
+        self.transform.set_local_position(x, y)
         angle = random.uniform(-math.pi/4, math.pi/4)
         direction = random.choice([-1, 1])
         self.velocity = [math.cos(angle) * self.speed * direction, math.sin(angle) * self.speed]
@@ -157,13 +163,7 @@ class BallScript(ScriptComponent):
 # --- Scene Setup ---
 def setup_pong_scene(engine):
     scene = engine.create_scene("Pong", (0, 0))
-    window_width, window_height = Window.get_instance().get_size()
-    zoom = 1.2
-    scene.camera_component.zoom = zoom
-
-    # Helper function to adjust world positions by zoom
-    def zoom_pos(x, y):
-        return x / zoom, y / zoom
+    scene.camera_component.zoom = 1.2
 
     # --- Background ---
     background = GameObject("Background")
@@ -174,8 +174,6 @@ def setup_pong_scene(engine):
     # --- Player Paddle ---
     player_paddle = GameObject("PlayerPaddle")
     player_paddle.add_component(Sprite("images/paddle.png"))
-    px, py = zoom_pos(50, window_height // 2)
-    player_paddle.get_component(Transform).set_local_position(px, py)
     player_paddle.add_component(PlayerPaddleScript())
     player_collider = TriggerCollider(shape="rect")
     player_paddle.add_component(player_collider)
@@ -184,8 +182,6 @@ def setup_pong_scene(engine):
     # --- AI Paddle ---
     ai_paddle = GameObject("AIPaddle")
     ai_paddle.add_component(Sprite("images/paddle.png"))
-    ax, ay = zoom_pos(window_width - 50, window_height // 2)
-    ai_paddle.get_component(Transform).set_local_position(ax, ay)
     ai_script = AIPaddleScript()
     ai_paddle.add_component(ai_script)
     ai_collider = TriggerCollider(shape="rect")
@@ -206,8 +202,6 @@ def setup_pong_scene(engine):
     # --- Ball ---
     ball = GameObject("Ball")
     ball.add_component(Sprite("images/ball.png"))
-    bx, by = zoom_pos(window_width // 2, window_height // 2)
-    ball.get_component(Transform).set_local_position(bx, by)
     ball_script = BallScript(player_paddle, ai_paddle, player_score, ai_score)
     ball.add_component(ball_script)
     ball_collider = TriggerCollider(shape="circle")
@@ -220,7 +214,7 @@ def setup_pong_scene(engine):
 
     # --- Exit Button ---
     def exit_scene(go):
-        engine.change_active_scene("Menu")
+        engine.set_active_scene("Menu")
 
     exit_btn = GameObject("ExitButton")
     exit_btn.add_component(UITransform(width=0.1, height=0.05, x=1, anchor="topright"))

@@ -1,6 +1,7 @@
-import math
-
 import pygame
+from collections import deque
+
+from assets.scripts.apple import Apple
 from cogworks import GameObject
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
@@ -11,113 +12,118 @@ from assets.scripts.snake_body_part import SnakeBodyPart
 
 
 class SnakeHead(ScriptComponent):
-
-    def __init__(self, on_game_over, speed: int = 100, gap: int = 15):
+    def __init__(self, grid, move_interval: float = 0.1):
         super().__init__()
-
-        self.on_game_over = on_game_over
-        self.speed = speed
-        self.gap = gap
+        self.move_interval = move_interval
+        self.grid = grid
 
         self.move_direction = (0, 0)
-        self.body_parts = []
-
-        self.head_pos = (0, 0)
-        self.positions = [self.head_pos]
-
-        self.segment_distances = []
+        self.move_timer = 0
+        self.can_move = True
 
         self.sprite = None
         self.camera = None
 
+        # store world positions that body parts will follow
+        self.position_history = deque(maxlen=5000)
+
+        self.body_parts = []
         self.input_manager = InputManager.get_instance()
 
     def start(self):
-        self.head_pos = self.game_object.transform.get_local_position()
         self.sprite = self.game_object.get_component(Sprite)
         self.camera = self.game_object.scene.camera_component
+        # When we add a component we should tell that component whether it was added in start so that
+        # we can use this in scene_manager to prevent saying a copy of it
+        self.game_object.add_component(
+            TriggerCollider(layer="Head", layer_mask=["BodyPart", "Apple"], debug=True), runtime=True
+        )
+        x, y = self.grid.get_random_point_in_grid_cell()
+        self.game_object.transform.set_local_position(x, y)
 
-        self.game_object.add_component(TriggerCollider(layer="Head", layer_mask=["BodyPart"], debug=True))
-        first_head_part = GameObject("FirstHeadPart")
-        first_head_part.add_component(SnakeBodyPart("images/player.png"))
-        self.game_object.add_child(first_head_part)
-        self.body_parts.append(first_head_part)
+        self.add_new_apple()
+
+        for _ in range(3):
+            self.add_body_part()
 
     def update(self, dt):
-        x, y = (0, 0)
+        if not self.can_move:
+            return
 
-        if self.input_manager.is_key_down(pygame.K_LEFT):
-            x = -1
-        if self.input_manager.is_key_down(pygame.K_RIGHT):
-            x = 1
-        if self.input_manager.is_key_down(pygame.K_UP):
-            y = -1
-        if self.input_manager.is_key_down(pygame.K_DOWN):
-            y = 1
+        # Timer
+        self.move_timer += dt
+        if self.move_timer >= self.move_interval:
+            self.move_timer = 0
+            self.move_head()
 
-        self.move_direction = (x, y)
-        self.move_head(dt)
-        self.update_body_parts()
+            # Update direction once per movement
+            x, y = self.move_direction
+            new_direction = self.move_direction
 
-    def render(self, surface):
-        pass
+            if self.input_manager.is_key_down(pygame.K_LEFT) and x != 1:
+                new_direction = (-1, 0)
+            elif self.input_manager.is_key_down(pygame.K_RIGHT) and x != -1:
+                new_direction = (1, 0)
+            elif self.input_manager.is_key_down(pygame.K_UP) and y != 1:
+                new_direction = (0, -1)
+            elif self.input_manager.is_key_down(pygame.K_DOWN) and y != -1:
+                new_direction = (0, 1)
 
-    def move_head(self, dt):
-        """Move the head according to the current move direction and check camera boundaries."""
-        head_x, head_y = self.game_object.transform.get_local_position()
+            self.move_direction = new_direction
+
+    def on_trigger_enter(self, other):
+        if other.layer == "Apple":
+            self.add_body_part()
+            self.add_new_apple()
+            other.game_object.destroy()
+
+    def move_head(self):
+        head_x, head_y = self.game_object.transform.get_world_position()
+
         dx, dy = self.move_direction
-        new_head_pos = (head_x + dx * dt * self.speed, head_y + dy * dt * self.speed)
-        self.game_object.transform.set_local_position(new_head_pos[0], new_head_pos[1])
-        self.positions.insert(0, new_head_pos)  # add to history
+        step_x = dx * self.sprite.get_width()
+        step_y = dy * self.sprite.get_height()
+        new_pos = (head_x + step_x, head_y + step_y)
+        self.game_object.transform.set_world_position(*new_pos)
 
-        # Screen boundary collision check
-        w = self.sprite.get_width()
-        h = self.sprite.get_height()
+        self.position_history.appendleft(new_pos)
 
+        # move body parts
+        for index, part in enumerate(self.body_parts, start=1):
+            if len(self.position_history) > index:
+                part.transform.set_world_position(*self.position_history[index])
+
+        # boundary check
+        w, h = self.sprite.get_width(), self.sprite.get_height()
         top, bottom, left, right = self.camera.get_bounds()
-
-        out_of_bounds = new_head_pos[1] - h / 2 < top or new_head_pos[1] + h / 2 > bottom or new_head_pos[0] - w / 2 < left or new_head_pos[0] + w / 2 > right
-
-        if out_of_bounds:
+        if (
+            new_pos[1] - h / 2 < top
+            or new_pos[1] + h / 2 > bottom
+            or new_pos[0] - w / 2 < left
+            or new_pos[0] + w / 2 > right
+        ):
             self.on_game_over()
 
-    def update_body_parts(self):
-        """Update each body part smoothly along the positions path."""
-        for i, body_part in enumerate(self.body_parts):
-            distance_needed = self.segment_distances[i]
-            accumulated = 0
-            last_pos = self.positions[0]
+    def add_new_apple(self):
+        apple = GameObject("Apple")
 
-            for j in range(1, len(self.positions)):
-                pos = self.positions[j]
-                dx = pos[0] - last_pos[0]
-                dy = pos[1] - last_pos[1]
-                step = math.hypot(dx, dy)
+        x, y = self.grid.get_random_point_in_grid_cell()
 
-                if accumulated + step >= distance_needed:
-                    remain = distance_needed - accumulated
-                    t = remain / step if step != 0 else 0
-                    interp_x = last_pos[0] + dx * min(t, 1)
-                    interp_y = last_pos[1] + dy * min(t, 1)
-                    body_part.rect_transform.set_position((interp_x, interp_y))
-                    break
+        apple.transform.set_world_position(x, y)
+        apple.transform.set_local_scale(0.5)
+        apple.add_component(Apple())
+        self.game_object.scene.add_game_object(apple)
 
-                accumulated += step
-                last_pos = pos
-            else:
-                # If distance_needed exceeds history, use last recorded position
-                body_part.rect_transform.set_position(self.positions[-1])
+    def add_body_part(self):
+        body_part = GameObject("BodyPart")
+        script = SnakeBodyPart(head=self, sprite_image_path="images/snake_part.png")
+        body_part.add_component(script)
+        self.game_object.add_child(body_part)
 
-            body_part.update()
+        # start at head position
+        body_part.transform.set_world_position(*self.game_object.transform.get_world_position())
+        self.body_parts.append(body_part)
 
-    # ---------------- Utility Methods ----------------
-    def calculate_segments(self):
-        """Calculate distance along the path for each body part."""
-        segment_width = self.sprite.get_width()
-        self.segment_distances = [
-            (i + 1) * (segment_width + self.gap)
-            for i in range(len(self.body_parts))
-        ]
-
-    def update_move_direction(self, move_direction):
-        self.move_direction = move_direction
+    def on_game_over(self):
+        self.move_direction = (0, 0)
+        self.can_move = False

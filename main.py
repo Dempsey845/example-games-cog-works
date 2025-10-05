@@ -9,7 +9,7 @@ from assets.scenes.trigger_test_scene import setup_trigger_test_scene
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
 
-engine = Engine(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, fps=180)
+engine = Engine(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, fps=500)
 
 # Setup scenes
 main_scene = setup_physics_scene(engine)
@@ -18,6 +18,6 @@ menu_scene = setup_menu_scene(engine)
 trigger_test_scene = setup_trigger_test_scene(engine)
 snake_scene = setup_snake_scene(engine)
 
-engine.set_active_scene("SnakeGame")
+engine.set_active_scene("Menu")
 
 engine.run()

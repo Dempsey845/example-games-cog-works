@@ -73,7 +73,7 @@ def setup_trigger_test_scene(engine):
 
     # --- Exit Button ---
     def exit_scene(go):
-        engine.change_active_scene("Menu")
+        engine.set_active_scene("Menu")
 
     exit_btn = GameObject("ExitButton")
     exit_btn.add_component(UITransform(width=0.1, height=0.05, x=1, anchor="topright"))
