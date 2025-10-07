@@ -1,5 +1,3 @@
-import weakref
-
 import pygame
 from cogworks.components.rigidbody2d import Rigidbody2D
 from cogworks.components.script_component import ScriptComponent
@@ -25,6 +23,7 @@ class PlatformerMovement(ScriptComponent):
         if not self.rigidbody:
             raise Exception("PlatformerMovement requires a Rigidbody2D")
         self.rigidbody.velocity_controlled = True
+
 
     def update(self, dt):
         rb = self.rigidbody

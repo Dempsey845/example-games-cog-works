@@ -27,8 +27,6 @@ class CameraController(ScriptComponent):
         """
         super().__init__()
         self.target_transform_ref = weakref.ref(target_transform)
-        self.start_offset_x = offset_x
-        self.start_offset_y = offset_y
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.smoothing = smoothing
@@ -37,8 +35,6 @@ class CameraController(ScriptComponent):
 
     def start(self):
         self.camera_component_ref = weakref.ref(self.game_object.scene.camera_component)
-        self.offset_x = self.start_offset_x
-        self.offset_y = self.start_offset_y
 
     def update(self, dt: float) -> None:
         if not self.fixed:
@@ -63,7 +59,7 @@ class CameraController(ScriptComponent):
         target_x = target_transform.local_x + self.offset_x
         target_y = target_transform.local_y + self.offset_y
 
-        # Current camera centre
+        # Current camera center
         current_x = camera_component.offset_x + (width / 2) / camera_component.zoom
         current_y = camera_component.offset_y + (height / 2) / camera_component.zoom
 

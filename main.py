@@ -9,7 +9,7 @@ from assets.scenes.trigger_test_scene import setup_trigger_test_scene
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
-engine = Engine(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, fps=500)
+engine = Engine(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, fps=500, world_bound_x=20000)
 
 # Setup scenes
 main_scene = setup_physics_scene(engine)

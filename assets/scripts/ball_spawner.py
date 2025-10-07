@@ -14,12 +14,12 @@ class BallSpawner(ScriptComponent):
 
     def start(self) -> None:
         window_width, _ = Window.get_instance().get_size()
-        ball_count = 1000
+        ball_count = 20
         for i in range(ball_count):
             scale = random() * 0.5 + 0.5
             ball = GameObject(
                 f"Ball{i}",
-                x=window_width + (i * 0.01),
+                x=i * 50,
                 y=-600 - (i + 500),
                 scale_x=scale,
                 scale_y=scale
