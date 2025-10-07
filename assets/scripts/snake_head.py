@@ -1,7 +1,10 @@
+import weakref
+
 import pygame
 from collections import deque
 
 from assets.scripts.apple import Apple
+from assets.scripts.snake_grid import SnakeGrid
 from cogworks import GameObject
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
@@ -12,9 +15,9 @@ from assets.scripts.snake_body_part import SnakeBodyPart
 
 
 class SnakeHead(ScriptComponent):
-    def __init__(self, grid, move_interval: float = 0.1):
+    def __init__(self, grid:SnakeGrid, move_interval: float = 0.1):
         super().__init__()
-        self.camera = None
+        self.camera_component_ref = None
         self.sprite = None
         self.input_manager = None
         self.body_parts = None
@@ -23,7 +26,7 @@ class SnakeHead(ScriptComponent):
         self.move_timer = None
         self.move_direction = None
         self.move_interval = move_interval
-        self.grid = grid
+        self.grid_ref = weakref.ref(grid)
 
     def start(self):
         self.move_direction = (0, 0)
@@ -37,13 +40,16 @@ class SnakeHead(ScriptComponent):
         self.input_manager = InputManager.get_instance()
 
         self.sprite = self.game_object.get_component(Sprite)
-        self.camera = self.game_object.scene.camera_component
+        self.camera_component_ref = weakref.ref(self.game_object.scene.camera_component)
 
         self.game_object.add_component(
             TriggerCollider(layer="Head", layer_mask=["BodyPart", "Apple"], debug=False)
         )
-        x, y = self.grid.get_random_point_in_grid_cell()
-        self.game_object.transform.set_local_position(x, y)
+
+        grid = self.grid_ref()
+        if grid:
+            x, y = grid.get_random_point_in_grid_cell()
+            self.game_object.transform.set_local_position(x, y)
 
         self.add_new_apple()
 
@@ -82,11 +88,19 @@ class SnakeHead(ScriptComponent):
             other.game_object.destroy()
 
     def move_head(self):
+        sprite = self.sprite
+        if not sprite:
+            return
+
+        camera_component = self.camera_component_ref()
+        if not camera_component:
+            return
+
         head_x, head_y = self.game_object.transform.get_world_position()
 
         dx, dy = self.move_direction
-        step_x = dx * self.sprite.get_width()
-        step_y = dy * self.sprite.get_height()
+        step_x = dx * sprite.get_width()
+        step_y = dy * sprite.get_height()
         new_pos = (head_x + step_x, head_y + step_y)
         self.game_object.transform.set_world_position(*new_pos)
 
@@ -98,8 +112,8 @@ class SnakeHead(ScriptComponent):
                 part.transform.set_world_position(*self.position_history[index])
 
         # boundary check
-        w, h = self.sprite.get_width(), self.sprite.get_height()
-        top, bottom, left, right = self.camera.get_bounds()
+        w, h = sprite.get_width(), sprite.get_height()
+        top, bottom, left, right = camera_component.get_bounds()
         if (
             new_pos[1] - h / 2 < top
             or new_pos[1] + h / 2 > bottom
@@ -109,11 +123,13 @@ class SnakeHead(ScriptComponent):
             self.on_game_over()
 
     def add_new_apple(self):
-        x, y = self.grid.get_random_point_in_grid_cell()
-        apple = GameObject("Apple", x=x, y=y, scale_x=0.5, scale_y=0.5)
+        grid = self.grid_ref()
+        if grid:
+            x, y = grid.get_random_point_in_grid_cell()
+            apple = GameObject("Apple", x=x, y=y, scale_x=0.5, scale_y=0.5)
 
-        apple.add_component(Apple())
-        self.game_object.scene.instantiate_game_object(apple)
+            apple.add_component(Apple())
+            self.game_object.scene.instantiate_game_object(apple)
 
     def add_body_part(self):
         x, y = self.game_object.transform.get_world_position()

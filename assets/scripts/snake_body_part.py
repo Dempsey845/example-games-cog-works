@@ -1,3 +1,5 @@
+import weakref
+
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
 from cogworks.components.trigger_collider import TriggerCollider
@@ -33,4 +35,5 @@ class SnakeBodyPart(ScriptComponent):
             self.has_collider = True
 
     def on_trigger_enter(self, other):
-        self.head.on_game_over()
+        if self.head:
+            self.head.on_game_over()

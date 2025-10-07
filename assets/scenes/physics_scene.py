@@ -1,5 +1,6 @@
-import random
+from cogworks.pygame_wrappers.window import Window
 
+from assets.scripts.ball_spawner import BallSpawner
 from assets.scripts.player_health import PlayerHealth
 from assets.scripts.spike import Spike
 from cogworks.components.background import Background
@@ -15,11 +16,11 @@ from cogworks.components.rigidbody2d import Rigidbody2D
 from assets.scripts.platformer_movement import PlatformerMovement
 from assets.scripts.camera_controller import CameraController
 
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 800
 
 def setup_physics_scene(engine):
     main_scene = engine.create_scene("Physics")
+
+    window_width, window_height = Window.get_instance().get_size()
 
     # --- Background Setup ---
     background = GameObject("Background")
@@ -47,12 +48,12 @@ def setup_physics_scene(engine):
 
     # --- Player Setup ---
     player = GameObject(
-        "Player", 2, x=WINDOW_WIDTH, y=-500, scale_x=2, scale_y=2
+        "Player", 2, x=window_width, y=-500, scale_x=2, scale_y=2
     )
     player.add_component(Sprite("images/cow.png", offset_x=-80, offset_y=-85, scale_factor=0.5))
-    player.add_component(Rigidbody2D(freeze_rotation=True, width=60, height=100, debug=True))
+    player.add_component(Rigidbody2D(freeze_rotation=True, width=60, height=100, debug=False))
     player.add_component(PlatformerMovement(speed=1000, jump_force=1000))
-    player.add_component(TriggerCollider(width=80, layer="Player", layer_mask=["Spike"], debug=False))
+    player.add_component(TriggerCollider(width=120, height=220, layer="Player", layer_mask=["Spike"], debug=True))
     player.add_component(PlayerHealth(fill_image=heart_fill_image.get_component(UIFillImage)))
     main_scene.add_game_object(player)
 
@@ -67,34 +68,40 @@ def setup_physics_scene(engine):
 
     # --- Circle Container & Circles ---
     circle_container = GameObject("Circle Container")
+    circle_container.add_component(BallSpawner())
     main_scene.add_game_object(circle_container)
-
-    for i in range(50):
-        scale = random.random() * 0.5 + 0.5
-        circle = GameObject(
-            f"Circle{i}",
-            x=WINDOW_WIDTH + (i * 0.1),
-            y=-300 - (i * 2),
-            scale_x=scale,
-            scale_y=scale
-        )
-        circle.add_component(Sprite("images/duck.png"))
-        circle.add_component(Rigidbody2D(shape_type="circle", radius=100*scale, debug=False, freeze_rotation=False, friction=0.1))
-        circle_container.add_child(circle)
 
     # --- Camera ---
     main_scene.camera.add_component(CameraController(player.get_component(Transform), fixed=True))
-    main_scene.camera_component.set_zoom(0.4)
+    main_scene.camera_component.set_zoom(0.3)
 
     # --- Floor ---
-    floor = GameObject("Floor", WINDOW_WIDTH, WINDOW_HEIGHT, scale_x=4, scale_y=4)
-    floor_sprite = Sprite("images/floor_2.png")
-    floor.add_component(floor_sprite)
-    floor.add_component(Rigidbody2D(static=True, debug=True))
-    main_scene.add_game_object(floor)
+    floors = [
+        # Ground floor (spanning across bottom)
+        {"x": window_width, "y": window_height, "scale": 4},
+
+        # Raised platform 1
+        {"x": -400, "y": -100, "scale": 1},
+
+        # Mid-air platform
+        {"x": 1600, "y": -300, "scale": 1},
+    ]
+
+    for i, floor in enumerate(floors):
+        floor_object = GameObject(
+            f"Floor{i}",
+            x=floor["x"],
+            y=floor["y"],
+            scale_x=floor["scale"],
+            scale_y=floor["scale"]
+        )
+        floor_sprite = Sprite("images/floor_2.png")
+        floor_object.add_component(floor_sprite)
+        floor_object.add_component(Rigidbody2D(static=True, debug=True))
+        main_scene.add_game_object(floor_object)
 
     # --- Spike ---
-    spike = GameObject("Spike", z_index=3, x=WINDOW_WIDTH, y=-WINDOW_HEIGHT//3.2, scale_x=2, scale_y=2)
+    spike = GameObject("Spike", z_index=3, x=window_width, y=window_height//2, scale_x=2, scale_y=2)
     spike.add_component(Sprite("images/spikes.png"))
     spike.add_component(Rigidbody2D(static=True, debug=True))
     spike.add_component(Spike())

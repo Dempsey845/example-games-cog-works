@@ -1,3 +1,5 @@
+import weakref
+
 import pygame
 from cogworks.components.rigidbody2d import Rigidbody2D
 from cogworks.components.script_component import ScriptComponent
@@ -25,23 +27,28 @@ class PlatformerMovement(ScriptComponent):
         self.rigidbody.velocity_controlled = True
 
     def update(self, dt):
+        rb = self.rigidbody
+        if not rb:
+            return
+
         jump_pressed = self.input.is_key_down(pygame.K_SPACE)
-        if jump_pressed and not self.jump_pressed_last_frame and self.is_grounded:
-            self.rigidbody.body.apply_impulse_at_world_point(
-                (0, -self.jump_force * self.rigidbody.body.mass),
-                self.rigidbody.body.position
+        if jump_pressed and not self.jump_pressed_last_frame and rb.body.velocity[1] == 0:
+            rb.body.apply_impulse_at_world_point(
+                (0, -self.jump_force * rb.body.mass),
+                rb.body.position
             )
         self.jump_pressed_last_frame = jump_pressed
 
     def fixed_update(self, dt):
-        # Desired horizontal velocity from input
+        rb = self.rigidbody
+        if not rb:
+            return
+
         vx = 0
         if self.input.is_key_down(pygame.K_a) or self.input.is_key_down(pygame.K_LEFT):
             vx -= self.speed
         if self.input.is_key_down(pygame.K_d) or self.input.is_key_down(pygame.K_RIGHT):
             vx += self.speed
 
-        self.rigidbody.desired_velocity = vx, self.rigidbody.body.velocity.y
-
-        # Update grounded state
-        self.is_grounded = self.rigidbody.check_grounded()
+        rb.desired_velocity = vx, rb.body.velocity.y
+        self.is_grounded = rb.check_grounded()

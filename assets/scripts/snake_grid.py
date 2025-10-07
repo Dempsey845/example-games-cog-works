@@ -1,4 +1,6 @@
 import random
+import weakref
+
 import pygame
 
 from cogworks.components.script_component import ScriptComponent
@@ -6,7 +8,7 @@ from cogworks.components.script_component import ScriptComponent
 class SnakeGrid(ScriptComponent):
     def __init__(self, camera, cell_size=(20, 20)):
         super().__init__()
-        self.camera = camera
+        self.camera_ref = weakref.ref(camera)
         self.cell_size = cell_size
 
     def render(self, surface) -> None:
@@ -14,8 +16,12 @@ class SnakeGrid(ScriptComponent):
         if self.cell_size == (0, 0):
             return  # grid can't be drawn before size is known
 
+        camera = self.camera_ref()
+        if not camera:
+            return
+
         cell_width, cell_height = self.cell_size
-        top, bottom, left, right = self.camera.get_bounds()
+        top, bottom, left, right = camera.get_bounds()
 
         # Convert bounds to integers for range
         top = int(top)
@@ -39,9 +45,12 @@ class SnakeGrid(ScriptComponent):
 
     def get_random_point_in_grid_cell(self, margin=1):
         """Return a random point positioned in the middle of a grid cell, optionally ignoring edges by 'margin' cells."""
+        camera = self.camera_ref()
+        if not camera:
+            return 0, 0
 
         cell_w, cell_h = self.cell_size
-        top, bottom, left, right = self.camera.get_bounds()
+        top, bottom, left, right = camera.get_bounds()
 
         # Compute how many grid cells fit in the visible area
         cols = int((right - left) // cell_w)
