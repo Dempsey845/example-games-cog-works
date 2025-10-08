@@ -1,7 +1,11 @@
+from cogworks import GameObject
+
 from assets.scripts.player_coins import PlayerCoins
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
 from cogworks.components.trigger_collider import TriggerCollider
+
+from assets.scripts.sparkle_particle_effect import SparkleParticleEffect
 
 
 class Coin(ScriptComponent):
@@ -46,4 +50,8 @@ class Coin(ScriptComponent):
     def on_trigger_enter(self, other):
         if not self.collided:
             other.game_object.get_component(PlayerCoins).add_coin()
+            x, y = self.game_object.transform.get_local_position()
+            sparkle = GameObject("Blood Effect", x=x, y=y)
+            sparkle.add_component(SparkleParticleEffect())
+            self.game_object.scene.instantiate_game_object(sparkle)
             self.collided = True

@@ -113,7 +113,7 @@ def setup_physics_scene(engine):
         main_scene.add_game_object(floor_object)
 
     # --- Spike ---
-    spike = GameObject("Spike", z_index=3, x=200, y=window_height-200, scale_x=2, scale_y=2)
+    spike = GameObject("Spike", z_index=3, x=600, y=window_height-200, scale_x=2, scale_y=2)
     spike.add_component(Sprite("images/spikes.png"))
     spike.add_component(Rigidbody2D(static=True, debug=True))
     spike.add_component(Spike())
