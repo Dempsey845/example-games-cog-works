@@ -43,12 +43,6 @@ class PlayerHealth(ScriptComponent):
             self.fill_image_ref().fill_speed = fill_speed
             self.fill_image_ref().set_fill(amount=self.current_health / self.max_health, smooth=True)
 
-    def on_disabled(self):
-        self.on_death()
-
-    def on_removed(self):
-        self.on_death()
-
     def on_death(self):
         if not self.dead:
             self.dead = True

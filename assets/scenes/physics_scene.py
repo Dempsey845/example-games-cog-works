@@ -6,7 +6,6 @@ from cogworks.pygame_wrappers.window import Window
 
 from assets.scripts.ball_spawner import BallSpawner
 from assets.scripts.player_health import PlayerHealth
-from assets.scripts.spike import Spike
 from cogworks.components.background import Background
 from cogworks.components.trigger_collider import TriggerCollider
 from cogworks.components.ui.ui_button import UIButton
@@ -61,10 +60,10 @@ def setup_physics_scene(engine):
     player = GameObject(
         "Player", 2, x=window_width, y=-500, scale_x=2, scale_y=2
     )
-    player.add_component(Sprite("images/cow.png", offset_x=-80, offset_y=-85, scale_factor=0.5))
-    player.add_component(Rigidbody2D(freeze_rotation=True, width=60, height=100, debug=False))
+    player.add_component(Sprite("images/player.png", scale_factor=0.5))
+    player.add_component(Rigidbody2D(freeze_rotation=True, debug=True))
     player.add_component(PlatformerMovement(speed=1000, jump_force=1000))
-    player.add_component(TriggerCollider(width=120, height=220, layer="Player", layer_mask=["Spike", "Coin"], debug=True))
+    player.add_component(TriggerCollider(layer="Player", layer_mask=["Spike", "Coin"], debug=True))
     player.add_component(PlayerHealth(fill_image=heart_fill_image.get_component(UIFillImage)))
     player.add_component(PlayerCoins(coin_counter_label))
     main_scene.add_game_object(player)
@@ -88,7 +87,7 @@ def setup_physics_scene(engine):
     main_scene.camera_component.set_zoom(0.3)
 
     # --- Floor ---
-    floor_width = 800
+    floor_width = 1000
     floor_height = 100
     ground_floor_count = 4
     floors = [
@@ -108,34 +107,13 @@ def setup_physics_scene(engine):
         )
         floor_sprite = Sprite("images/floor_2.png")
         floor_object.add_component(floor_sprite)
-        floor_object.add_component(Rigidbody2D(static=True, debug=False))
+        floor_object.add_component(Rigidbody2D(static=True, debug=True, width=floor_sprite.get_width() * floor["scale"], height=floor_sprite.get_height() * floor["scale"]))
         floor_object.add_component(Platform())
         main_scene.add_game_object(floor_object)
-
-    # --- Spike ---
-    spike = GameObject("Spike", z_index=3, x=600, y=window_height-200, scale_x=2, scale_y=2)
-    spike.add_component(Sprite("images/spikes.png"))
-    spike.add_component(Rigidbody2D(static=True, debug=True))
-    spike.add_component(Spike())
-    main_scene.add_game_object(spike)
 
     # --- Manager ---
     manager = GameObject("Manager")
     manager.add_component(PlatformerManager())
     main_scene.add_game_object(manager)
-
-    # # --- Wall ---
-    # floor_x, floor_y = floor.get_component(Transform).get_local_position()
-    # wall1_sprite = Sprite("images/Wall.png")
-    # wall1 = GameObject(
-    #     "Wall 1",
-    #     x=floor_x + (floor_sprite.get_width(floor.get_component(Transform)) // 2 + 200) - wall1_sprite.get_image_width() // 2,
-    #     y=floor_y,
-    #     scale_x=10,
-    #     scale_y=10
-    # )
-    # wall1.add_component(wall1_sprite)
-    # wall1.add_component(Rigidbody2D(static=True, debug=True))
-    # main_scene.add_game_object(wall1)
 
     return main_scene

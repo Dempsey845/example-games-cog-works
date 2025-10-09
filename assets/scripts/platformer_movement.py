@@ -1,6 +1,7 @@
 import pygame
 from cogworks.components.rigidbody2d import Rigidbody2D
 from cogworks.components.script_component import ScriptComponent
+from cogworks.components.sprite import Sprite
 from cogworks.pygame_wrappers.input_manager import InputManager
 
 
@@ -15,6 +16,7 @@ class PlatformerMovement(ScriptComponent):
         self.jump_force = jump_force
         self.input = InputManager.get_instance()
         self.rigidbody: Rigidbody2D = None
+        self.sprite: Sprite = None
         self.is_grounded = False
         self.jump_pressed_last_frame = False
 
@@ -22,6 +24,7 @@ class PlatformerMovement(ScriptComponent):
         self.rigidbody = self.game_object.get_component(Rigidbody2D)
         if not self.rigidbody:
             raise Exception("PlatformerMovement requires a Rigidbody2D")
+        self.sprite = self.game_object.get_component(Sprite)
         self.rigidbody.velocity_controlled = True
 
 
@@ -46,8 +49,12 @@ class PlatformerMovement(ScriptComponent):
         vx = 0
         if self.input.is_key_down(pygame.K_a) or self.input.is_key_down(pygame.K_LEFT):
             vx -= self.speed
+            if self.sprite:
+                self.sprite.flip_x = True
         if self.input.is_key_down(pygame.K_d) or self.input.is_key_down(pygame.K_RIGHT):
             vx += self.speed
+            if self.sprite:
+                self.sprite.flip_x = False
 
         rb.desired_velocity = vx, rb.body.velocity.y
         self.is_grounded = rb.check_grounded()
