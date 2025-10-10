@@ -51,7 +51,7 @@ def setup_physics_scene(engine):
 
     # --- Floor ---
     floor_width = 1000
-    ground_floor_count = 2
+    ground_floor_count = 50
     floors = [
     ]
     for i in range(ground_floor_count):
@@ -69,7 +69,7 @@ def setup_physics_scene(engine):
         )
         floor_sprite = Sprite("images/floor_2.png")
         floor_object.add_component(floor_sprite)
-        floor_object.add_component(Rigidbody2D(static=True, debug=True, width=floor_sprite.get_width() * floor["scale"], height=floor_sprite.get_height() * floor["scale"]))
+        floor_object.add_component(Rigidbody2D(static=True, debug=False, width=floor_sprite.get_width() * floor["scale"], height=floor_sprite.get_height() * floor["scale"]))
         floor_object.add_component(Platform())
         main_scene.add_game_object(floor_object)
 

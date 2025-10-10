@@ -9,7 +9,7 @@ class Spike(ScriptComponent):
         self.damage = damage
 
     def start(self):
-        self.game_object.add_component(TriggerCollider(layer="Spike", width=200, height=20, offset_y=-100, layer_mask=["Player", "Circle"], debug=True))
+        self.game_object.add_component(TriggerCollider(layer="Spike", width=200, height=20, offset_y=-100, layer_mask=["Player", "Circle"], debug=False))
 
     def on_trigger_enter(self, other):
         if other.layer == "Player":

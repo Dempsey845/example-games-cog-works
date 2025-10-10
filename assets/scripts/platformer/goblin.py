@@ -72,6 +72,12 @@ class Goblin(ScriptComponent):
             self.x2, self.y2 = player_pos[0], player_pos[1]
             x2, y2 = (self.x2, self.y2)
             self.distance_squared = (x2 - self.x)**2 + (y2 - self.y)**2
+        else:
+            if self.current_state != self.states[0]:
+                self.sprite_animation.clear_selected_animation()
+                self.sprite.change_image("images/goblin/goblin.png")
+                self.current_state = self.states[0]
+            return
 
         match self.current_state:
             case "idle":
