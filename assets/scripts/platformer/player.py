@@ -1,9 +1,9 @@
 
 from cogworks import GameObject
 
-from assets.scripts.platformer_movement import PlatformerMovement
-from assets.scripts.player_coins import PlayerCoins
-from assets.scripts.player_health import PlayerHealth
+from assets.scripts.platformer.platformer_movement import PlatformerMovement
+from assets.scripts.platformer.player_coins import PlayerCoins
+from assets.scripts.platformer.player_health import PlayerHealth
 from cogworks.components.rigidbody2d import Rigidbody2D
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite

@@ -1,23 +1,15 @@
-from assets.scripts.platform import Platform
-from assets.scripts.platformer_manager import PlatformerManager
-from assets.scripts.player import Player
-from assets.scripts.player_coins import PlayerCoins
-from cogworks.components.ui.ui_label import UILabel
+from assets.scripts.platformer.platform import Platform
+from assets.scripts.platformer.platformer_manager import PlatformerManager
+from assets.scripts.platformer.player import Player
 from cogworks.pygame_wrappers.window import Window
 
-from assets.scripts.ball_spawner import BallSpawner
-from assets.scripts.player_health import PlayerHealth
+from assets.scripts.platformer.ball_spawner import BallSpawner
 from cogworks.components.background import Background
-from cogworks.components.trigger_collider import TriggerCollider
 from cogworks.components.ui.ui_button import UIButton
-from cogworks.components.ui.ui_fill_image import UIFillImage
-from cogworks.components.ui.ui_image import UIImage
 from cogworks.components.ui.ui_transform import UITransform
 from cogworks.game_object import GameObject
-from cogworks.components.transform import Transform
 from cogworks.components.sprite import Sprite
 from cogworks.components.rigidbody2d import Rigidbody2D
-from assets.scripts.platformer_movement import PlatformerMovement
 from assets.scripts.camera_controller import CameraController
 
 

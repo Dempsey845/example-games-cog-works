@@ -1,4 +1,4 @@
-from assets.scripts.player_health import PlayerHealth
+from assets.scripts.platformer.player_health import PlayerHealth
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.trigger_collider import TriggerCollider
 

@@ -4,8 +4,8 @@ from cogworks import GameObject
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.ui.ui_fill_image import UIFillImage
 
-from assets.scripts.blood_particle_effect import BloodParticleEffect
-from assets.scripts.death_screen import DeathScreen
+from assets.scripts.platformer.blood_particle_effect import BloodParticleEffect
+from assets.scripts.platformer.death_screen import DeathScreen
 
 
 class PlayerHealth(ScriptComponent):

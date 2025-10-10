@@ -3,15 +3,15 @@ import weakref
 import pygame
 from collections import deque
 
-from assets.scripts.apple import Apple
-from assets.scripts.snake_grid import SnakeGrid
+from assets.scripts.snake.apple import Apple
+from assets.scripts.snake.snake_grid import SnakeGrid
 from cogworks import GameObject
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
 from cogworks.components.trigger_collider import TriggerCollider
 from cogworks.pygame_wrappers.input_manager import InputManager
 
-from assets.scripts.snake_body_part import SnakeBodyPart
+from assets.scripts.snake.snake_body_part import SnakeBodyPart
 
 
 class SnakeHead(ScriptComponent):

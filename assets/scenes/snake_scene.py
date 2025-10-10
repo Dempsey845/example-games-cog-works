@@ -1,8 +1,8 @@
-from assets.scripts.snake_grid import SnakeGrid
+from assets.scripts.snake.snake_grid import SnakeGrid
 from cogworks import GameObject
 from cogworks.components.sprite import Sprite
 
-from assets.scripts.snake_head import SnakeHead
+from assets.scripts.snake.snake_head import SnakeHead
 from cogworks.components.ui.ui_button import UIButton
 from cogworks.components.ui.ui_transform import UITransform
 

@@ -1,15 +1,15 @@
 import random
 
-from assets.scripts.spike import Spike
+from assets.scripts.platformer.spike import Spike
 from cogworks.components.rigidbody2d import Rigidbody2D
 from cogworks.components.trigger_collider import TriggerCollider
 
-from assets.scripts.coin import Coin
+from assets.scripts.platformer.coin import Coin
 from cogworks import GameObject
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
 
-from assets.scripts.goblin import Goblin
+from assets.scripts.platformer.goblin import Goblin
 
 
 class Platform(ScriptComponent):
@@ -66,10 +66,9 @@ class Platform(ScriptComponent):
         self.game_object.scene.instantiate_game_object(spike)
 
     def get_edges(self):
-        x, y = self.game_object.transform.get_local_position()
+        x, _ = self.game_object.transform.get_local_position()
         platform_width = self.game_object.get_component(Sprite).get_width()
-        print(platform_width)
         scale, _ = self.game_object.transform.get_local_scale()
-        left_edge = -platform_width//2
-        right_edge = platform_width//2
+        left_edge = x - (platform_width//2)
+        right_edge = x + (platform_width//2)
         return left_edge, right_edge
