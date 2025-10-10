@@ -2,6 +2,7 @@
 from cogworks import GameObject
 
 from assets.scripts.platformer.platformer_movement import PlatformerMovement
+from assets.scripts.platformer.player_animation_controller import PlayerAnimationController
 from assets.scripts.platformer.player_coins import PlayerCoins
 from assets.scripts.platformer.player_health import PlayerHealth
 from cogworks.components.rigidbody2d import Rigidbody2D
@@ -51,11 +52,12 @@ class Player(ScriptComponent):
 
         # --- Player Components ---
         go.add_component(Rigidbody2D(freeze_rotation=True, debug=True, width=150, height=300))
-        go.add_component(Sprite("images/player.png", scale_factor=0.5))
+        go.add_component(Sprite("images/player/idle0.png", scale_factor=5, offset_y=-15))
         go.add_component(PlatformerMovement(speed=1000, jump_force=1000))
         go.add_component(TriggerCollider(layer="Player", layer_mask=["Spike", "Coin"], debug=True, width=120, height=300))
         go.add_component(PlayerHealth(fill_image=heart_fill_image.get_component(UIFillImage)))
         go.add_component(PlayerCoins(coin_counter_label))
+        go.add_component(PlayerAnimationController())
 
     def on_remove(self):
         Player.instance = None
