@@ -16,5 +16,5 @@ class PlayerCoins(ScriptComponent):
     def add_coin(self):
         self.coins += 1
         coin_counter_label = self.coin_counter_label_ref()
-        if coin_counter_label:
+        if coin_counter_label and coin_counter_label.exists():
             coin_counter_label.set_text(f"Coins: {self.coins}")

@@ -44,9 +44,9 @@ class Platform(ScriptComponent):
 
         goblin_scale = 0.8
         goblin_size = 300 * goblin_scale
-        goblin = GameObject("Goblin", z_index=2, x=x, y=y - platform_height//2 - goblin_size//2, scale_x=goblin_scale, scale_y=goblin_scale)
-        goblin.add_component(Sprite("images/goblin.png", offset_x=-10))
-        goblin.add_component(TriggerCollider(debug=True, width=100, height=200))
+        goblin = GameObject("Goblin", z_index=1, x=x, y=y - platform_height//2 - goblin_size//2, scale_x=goblin_scale, scale_y=goblin_scale)
+        goblin.add_component(Sprite("images/goblin/goblin.png", offset_y=-50, scale_factor=0.8))
+        goblin.add_component(TriggerCollider(debug=True, width=150, height=250))
         goblin.add_component(Goblin(self))
         self.game_object.scene.instantiate_game_object(goblin)
 
@@ -70,6 +70,6 @@ class Platform(ScriptComponent):
         platform_width = self.game_object.get_component(Sprite).get_width()
         print(platform_width)
         scale, _ = self.game_object.transform.get_local_scale()
-        left_edge = x - platform_width//(2 + scale)
-        right_edge = x + platform_width//(2 + scale)
+        left_edge = -platform_width//2
+        right_edge = platform_width//2
         return left_edge, right_edge

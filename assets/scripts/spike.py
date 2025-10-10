@@ -15,7 +15,7 @@ class Spike(ScriptComponent):
         if other.layer == "Player":
             player_health = other.game_object.get_component(PlayerHealth)
 
-            if player_health:
+            if player_health and player_health.exists():
                 player_health.take_damage(self.damage)
 
         elif other.layer == "Circle":

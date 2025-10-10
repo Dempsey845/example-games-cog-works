@@ -1,5 +1,7 @@
 import weakref
 
+from cogworks import GameObject
+
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.transform import Transform
 
@@ -11,7 +13,7 @@ class CameraController(ScriptComponent):
 
     def __init__(
         self,
-        target_transform: Transform,
+        target_object: GameObject,
         offset_x: float = 0,
         offset_y: float = 0,
         smoothing: float = 5.0,
@@ -19,18 +21,19 @@ class CameraController(ScriptComponent):
     ):
         """
         Args:
-            target_transform (Transform): The Transform of the target GameObject.
+            target_object (GameObject): The target GameObject.
             offset_x (float): Horizontal offset from the target position.
             offset_y (float): Vertical offset from the target position.
             smoothing (float): How fast the camera follows the target. Higher = snappier.
             fixed (bool): use fixed_update(). Good for following physics objects.
         """
         super().__init__()
-        self.target_transform_ref = weakref.ref(target_transform)
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.smoothing = smoothing
         self.camera_component_ref = None
+        self.target_object_ref = weakref.ref(target_object)
+        self.target_transform_ref = None
         self.fixed = fixed
 
     def start(self):
@@ -49,8 +52,8 @@ class CameraController(ScriptComponent):
         if not camera_component:
             return
 
-        target_transform = self.target_transform_ref()
-        if not target_transform:
+        target_transform = self.target_object_ref().transform
+        if not target_transform or not target_transform.exists():
             return
 
         width, height = self.game_object.scene.get_window_size()

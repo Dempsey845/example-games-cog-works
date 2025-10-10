@@ -1,5 +1,6 @@
 from assets.scripts.platform import Platform
 from assets.scripts.platformer_manager import PlatformerManager
+from assets.scripts.player import Player
 from assets.scripts.player_coins import PlayerCoins
 from cogworks.components.ui.ui_label import UILabel
 from cogworks.pygame_wrappers.window import Window
@@ -31,41 +32,11 @@ def setup_physics_scene(engine):
     background.add_component(Background())
     main_scene.add_game_object(background)
 
-    # --- Heart Background Image ---
-    heart_background = GameObject("HeartBackground", 5)
-    heart_background.add_component(UITransform(
-        width=0.1, height=0.1, y=0, x=0, anchor="topleft"
-    ))
-    heart_background.add_component(UIImage("images/heart_background.png"))
-    main_scene.add_game_object(heart_background)
-
-    # --- Health Fill Image ---
-    heart_fill_image = GameObject("HeartFill", 6)
-    heart_fill_image.add_component(UITransform(
-        width=0.1, height=0.1, y=0, x=0, anchor="topleft"
-    ))
-    heart_fill_image.add_component(UIFillImage(
-        "images/heart.png", fill_direction="vertical", fill_origin="bottom", fill_speed=0.5
-    ))
-    main_scene.add_game_object(heart_fill_image)
-
-    # --- Coin Counter Label ---
-    coin_counter = GameObject("CoinCounter")
-    coin_counter.add_component(UITransform(y=0.2, x=0, width=0.2, height=0.1, anchor="topleft"))
-    coin_counter_label = UILabel(text="Coins: 0", anchor="midleft")
-    coin_counter.add_component(coin_counter_label)
-    main_scene.add_game_object(coin_counter)
-
     # --- Player Setup ---
     player = GameObject(
         "Player", 2, x=window_width, y=-500, scale_x=2, scale_y=2
     )
-    player.add_component(Sprite("images/player.png", scale_factor=0.5))
-    player.add_component(Rigidbody2D(freeze_rotation=True, debug=True))
-    player.add_component(PlatformerMovement(speed=1000, jump_force=1000))
-    player.add_component(TriggerCollider(layer="Player", layer_mask=["Spike", "Coin"], debug=True))
-    player.add_component(PlayerHealth(fill_image=heart_fill_image.get_component(UIFillImage)))
-    player.add_component(PlayerCoins(coin_counter_label))
+    player.add_component(Player())
     main_scene.add_game_object(player)
 
     # --- Game Buttons ---
@@ -83,13 +54,12 @@ def setup_physics_scene(engine):
     main_scene.add_game_object(circle_container)
 
     # --- Camera ---
-    main_scene.camera.add_component(CameraController(player.get_component(Transform), fixed=True, offset_y=-300))
+    main_scene.camera.add_component(CameraController(player, fixed=True, offset_y=-300))
     main_scene.camera_component.set_zoom(0.3)
 
     # --- Floor ---
     floor_width = 1000
-    floor_height = 100
-    ground_floor_count = 4
+    ground_floor_count = 2
     floors = [
     ]
     for i in range(ground_floor_count):

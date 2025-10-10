@@ -47,7 +47,6 @@ def setup_trigger_test_scene(engine):
 
     # Player
     player = GameObject("Player", x=window_width // 4, y=window_height // 2)
-    player.transform.debug = True
     player.add_component(Sprite("images/player.png"))
     player.add_component(SimplePlayerScript())
     player_collider = TriggerCollider(shape="rect", debug=True, layer="Player", layer_mask=["Shape"])
