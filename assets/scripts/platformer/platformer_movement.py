@@ -34,7 +34,8 @@ class PlatformerMovement(ScriptComponent):
             return
 
         jump_pressed = self.input.is_key_down(pygame.K_SPACE)
-        if jump_pressed and not self.jump_pressed_last_frame and rb.body.velocity[1] == 0:
+        self.is_grounded = rb.body.velocity[1] == 0
+        if jump_pressed and not self.jump_pressed_last_frame and self.is_grounded:
             rb.body.apply_impulse_at_world_point(
                 (0, -self.jump_force * rb.body.mass),
                 rb.body.position
@@ -57,4 +58,3 @@ class PlatformerMovement(ScriptComponent):
                 self.sprite.flip_x = False
 
         rb.desired_velocity = vx, rb.body.velocity.y
-        self.is_grounded = rb.check_grounded()
