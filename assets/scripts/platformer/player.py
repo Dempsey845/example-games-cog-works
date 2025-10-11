@@ -52,7 +52,7 @@ class Player(ScriptComponent):
 
         # --- Player Components ---
         go.add_component(Rigidbody2D(freeze_rotation=True, debug=False, width=150, height=300))
-        go.add_component(Sprite("images/player/idle0.png", scale_factor=5, offset_y=-20))
+        go.add_component(Sprite("images/player/idle0.png", scale_factor=5, offset_y=-20, pixel_art_mode=True))
         go.add_component(PlatformerMovement(speed=1000, jump_force=1000))
         go.add_component(TriggerCollider(layer="Player", layer_mask=["Spike", "Coin"], debug=False, width=120, height=300))
         go.add_component(PlayerHealth(fill_image=heart_fill_image.get_component(UIFillImage)))
