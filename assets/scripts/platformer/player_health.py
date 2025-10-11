@@ -25,6 +25,11 @@ class PlayerHealth(ScriptComponent):
         if fill_image:
             self.fill_image_ref().set_fill(amount=self.current_health / self.max_health, smooth=True)
 
+    def update(self, dt):
+        x, y = self.game_object.transform.get_local_position()
+        if y > 500:
+            self.take_damage(self.max_health)
+
     def take_damage(self, damage: int, fill_speed: float = 0.5):
         self.current_health -= damage
         self.current_health = max(self.current_health, 0)

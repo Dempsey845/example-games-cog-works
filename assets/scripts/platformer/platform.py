@@ -15,7 +15,7 @@ from assets.scripts.platformer.goblin import Goblin
 class Platform(ScriptComponent):
     def __init__(self):
         super().__init__()
-        self.options = ["coin", "goblin", "spike"]
+        self.options = ["coin","none","goblin", "spike"]
 
     def start(self):
         random_option = random.choice(self.options)
@@ -46,7 +46,7 @@ class Platform(ScriptComponent):
         goblin_size = 300 * goblin_scale
         goblin = GameObject("Goblin", z_index=1, x=x, y=y - platform_height//2 - goblin_size//2, scale_x=goblin_scale, scale_y=goblin_scale)
         goblin.add_component(Sprite("images/goblin/goblin.png", offset_y=-50, scale_factor=0.8))
-        goblin.add_component(TriggerCollider(debug=False, width=150, height=250))
+        goblin.add_component(TriggerCollider(debug=False, width=150, height=250, layer="Enemy", layer_mask=["Bullet"]))
         goblin.add_component(Goblin(self))
         self.game_object.scene.instantiate_game_object(goblin)
 
@@ -54,7 +54,7 @@ class Platform(ScriptComponent):
         x, y = self.game_object.transform.get_local_position()
         platform_height = self.game_object.get_component(Sprite).get_height()
 
-        spike_scale = 2
+        spike_scale = 1.5
         spike_size = 100 * spike_scale
         spike = GameObject("Spike", z_index=3, x=x, y=y - platform_height // 2 - spike_size // 2, scale_x=spike_scale,
                            scale_y=spike_scale)

@@ -2,6 +2,8 @@ from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
 from cogworks.components.trigger_collider import TriggerCollider
 
+from assets.scripts.platformer.enemy_health import EnemyHealth
+
 
 class Bullet(ScriptComponent):
 
@@ -10,10 +12,11 @@ class Bullet(ScriptComponent):
         self.speed = 2500
         self.lifespan = 1
         self.lifetime = 0.0
+        self.damage = 50
 
     def start(self):
-        self.game_object.add_component(Sprite("images/bullet.png"))
-        self.game_object.add_component(TriggerCollider(layer="Bullet", layer_mask=["Enemy"], debug=True))
+        self.game_object.add_component(Sprite("images/bullet.png", flip_y=True))
+        self.game_object.add_component(TriggerCollider(layer="Bullet", debug=False))
 
     def update(self, dt):
         forward = self.game_object.transform.get_forward()
@@ -28,3 +31,9 @@ class Bullet(ScriptComponent):
         self.lifetime += dt
         if self.lifetime >= self.lifespan:
             self.game_object.destroy()
+
+    def on_trigger_enter(self, other):
+        enemy_health = other.game_object.get_component(EnemyHealth)
+        if enemy_health is not None:
+            enemy_health.take_damage(self.damage)
+        self.game_object.destroy()

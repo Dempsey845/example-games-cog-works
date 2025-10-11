@@ -1,3 +1,7 @@
+import random
+
+from cogworks.components.trigger_collider import TriggerCollider
+
 from assets.scripts.platformer.platform import Platform
 from assets.scripts.platformer.platformer_manager import PlatformerManager
 from assets.scripts.platformer.player import Player
@@ -46,18 +50,27 @@ def setup_physics_scene(engine):
     main_scene.add_game_object(circle_container)
 
     # --- Camera ---
-    main_scene.camera.add_component(CameraController(player, fixed=True, offset_y=-300))
+    main_scene.camera.add_component(CameraController(player, fixed=True, offset_y=-300, max_y=-300))
     main_scene.camera_component.set_zoom(0.3)
 
     # --- Floor ---
     floor_width = 1000
-    ground_floor_count = 50
+    ground_floor_count = 10
     floors = [
     ]
-    for i in range(ground_floor_count):
-        floors.append({"x": 0 + (floor_width * 2 * i), "y": window_height, "scale": 2})
-        floors.append({"x": 0 + (floor_width * 2 * i), "y": 0, "scale": 1})
 
+    for i in range(ground_floor_count):
+        rand_x_offset = random.randint(-100, 100)
+        rand_y = random.randint(0, 50)
+
+        spawn_third = random.randint(0, 1) == 1
+
+        floors.append({"x": 0 + (floor_width * i), "y": window_height, "scale": 2})
+        floors.append({"x": rand_x_offset + (floor_width * i), "y": rand_y, "scale": 1})
+        if spawn_third:
+            rand_y = random.randint(-500, -450)
+            rand_x_offset = random.randint(-200, 100)
+            floors.append({"x": rand_x_offset + (floor_width * i), "y": rand_y, "scale": 1})
 
     for i, floor in enumerate(floors):
         floor_object = GameObject(
@@ -70,6 +83,7 @@ def setup_physics_scene(engine):
         floor_sprite = Sprite("images/floor_2.png")
         floor_object.add_component(floor_sprite)
         floor_object.add_component(Rigidbody2D(static=True, debug=False, width=floor_sprite.get_width() * floor["scale"], height=floor_sprite.get_height() * floor["scale"]))
+        floor_object.add_component(TriggerCollider())
         floor_object.add_component(Platform())
         main_scene.add_game_object(floor_object)
 

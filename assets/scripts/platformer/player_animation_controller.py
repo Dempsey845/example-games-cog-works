@@ -1,3 +1,4 @@
+import math
 import weakref
 from assets.scripts.platformer.bullet import Bullet
 from cogworks import GameObject
@@ -6,6 +7,7 @@ from cogworks.components.sprite import Sprite
 from cogworks.components.sprite_animation import SpriteAnimation
 from cogworks.pygame_wrappers.input_manager import InputManager
 
+from assets.scripts.platformer.muzzle_flash_particle_effect import MuzzleFlashParticleEffect
 from assets.scripts.platformer.platformer_movement import PlatformerMovement
 
 
@@ -50,25 +52,47 @@ class PlayerAnimationController(ScriptComponent):
         self.platformer_movement = self.game_object.get_component(PlatformerMovement)
         self.change_state(PlayerState.IDLE)
 
-    def on_attack(self):
+    def is_mouse_on_left(self):
         camera = self.camera_ref()
         if camera is None:
-            return
+            return False
 
         mx, my = self.input.get_mouse_position()
         mwx, mwy = camera.screen_to_world(mx, my)
 
         pwx, pwy = self.game_object.transform.get_world_position()
 
-        self.sprite.flip_x = mwx < pwx
+        return mwx < pwx
 
-        bullet_rot = 180 if mwx < pwx else 0
-        bullet_pos_x = pwx - 200 if mwx < pwx else pwx + 200
-        bullet_pos_y =  pwy - 75
-        bullet = GameObject("Bullet", x=bullet_pos_x, y=bullet_pos_y, scale_x=0.8, scale_y=0.8, rotation=bullet_rot)
+    def on_attack(self):
+        camera = self.camera_ref()
+        if camera is None:
+            return
+
+        pwx, pwy = self.game_object.transform.get_world_position()
+        mx, my = self.input.get_mouse_position()
+        mouse_x, mouse_y = camera.screen_to_world(mx, my)
+
+        # Original spawn point
+        mouse_on_left = self.is_mouse_on_left()
+        spawn_x = pwx - 200 if mouse_on_left else pwx + 200
+        spawn_y = pwy - 100
+
+        # Angle from spawn to mouse
+        dx = mouse_x - spawn_x
+        dy = mouse_y - spawn_y
+        angle = math.degrees(math.atan2(dy, dx))
+
+        # Muzzle flash
+        muzzle = GameObject("MuzzleFX", x=spawn_x, y=spawn_y)
+        muzzle.add_component(MuzzleFlashParticleEffect())
+
+        # Bullet pointing toward mouse
+        bullet = GameObject("Bullet", x=spawn_x, y=spawn_y, scale_x=0.8, scale_y=0.8, rotation=angle, z_index=5)
         bullet.add_component(Bullet())
-        self.game_object.scene.instantiate_game_object(bullet)
 
+        self.game_object.scene.instantiate_game_object(muzzle)
+        self.game_object.scene.instantiate_game_object(bullet)
 
     def update(self, dt):
         x_vel, y_vel = self.platformer_movement.rigidbody.body.velocity
@@ -82,8 +106,10 @@ class PlayerAnimationController(ScriptComponent):
             if grounded:
                 if self.platformer_movement.rigidbody.body.velocity.x == 0:
                     self.change_state(PlayerState.SHOOT)
+                    self.sprite.flip_x = self.is_mouse_on_left()
             else:
                 self.change_state(PlayerState.SHOOT_IN_AIR)
+                self.sprite.flip_x = self.is_mouse_on_left()
 
         self.attack_pressed_last_frame = attack_pressed
         self.platformer_movement.can_move = not self.state == PlayerState.SHOOT

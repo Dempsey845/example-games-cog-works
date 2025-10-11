@@ -1,3 +1,5 @@
+import math
+
 from cogworks import Engine
 from assets.scenes.physics_scene import setup_physics_scene
 from assets.scenes.menu_scene import setup_menu_scene
@@ -9,7 +11,7 @@ from assets.scenes.trigger_test_scene import setup_trigger_test_scene
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 
-engine = Engine(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, fps=500, world_bound_x=200000)
+engine = Engine(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, fps=500, world_bound_x=math.inf)
 
 # Setup scenes
 main_scene = setup_physics_scene(engine)

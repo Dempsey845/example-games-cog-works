@@ -1,5 +1,6 @@
 import weakref
 
+from assets.scripts.platformer.enemy_health import EnemyHealth
 from assets.scripts.platformer.player import Player
 from assets.scripts.platformer.player_health import PlayerHealth
 from cogworks.components.script_component import ScriptComponent
@@ -58,11 +59,13 @@ class Goblin(ScriptComponent):
         self.idle_timer = 0.0
 
         self.sprite_animation = SpriteAnimation()
-
         self.sprite_animation.add_animation("Run", "images/goblin/run/run.png", 1, 6, 0.15)
+
         attack_anim = self.sprite_animation.add_animation("Attack", "images/goblin/attack/attack.png", 1, 6, 0.15)
         attack_anim.add_event(3, self.attack)
+
         self.game_object.add_component(self.sprite_animation)
+        self.game_object.add_component(EnemyHealth())
 
     def update(self, dt: float) -> None:
         self.x, self.y = self.transform.get_local_position()

@@ -1,7 +1,6 @@
 import weakref
 
 from cogworks import GameObject
-
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.transform import Transform
 
@@ -17,7 +16,8 @@ class CameraController(ScriptComponent):
         offset_x: float = 0,
         offset_y: float = 0,
         smoothing: float = 5.0,
-        fixed: bool = False
+        fixed: bool = False,
+        max_y: float = None
     ):
         """
         Args:
@@ -26,6 +26,7 @@ class CameraController(ScriptComponent):
             offset_y (float): Vertical offset from the target position.
             smoothing (float): How fast the camera follows the target. Higher = snappier.
             fixed (bool): use fixed_update(). Good for following physics objects.
+            max_y (float): Optional maximum y value for the camera.
         """
         super().__init__()
         self.offset_x = offset_x
@@ -35,6 +36,7 @@ class CameraController(ScriptComponent):
         self.target_object_ref = weakref.ref(target_object)
         self.target_transform_ref = None
         self.fixed = fixed
+        self.max_y = max_y
 
     def start(self):
         self.camera_component_ref = weakref.ref(self.game_object.scene.camera_component)
@@ -69,6 +71,10 @@ class CameraController(ScriptComponent):
         # Smoothly interpolate towards target
         lerp_x = current_x + (target_x - current_x) * min(self.smoothing * dt, 1)
         lerp_y = current_y + (target_y - current_y) * min(self.smoothing * dt, 1)
+
+        # Clamp lerp_y to max_y if specified
+        if self.max_y is not None:
+            lerp_y = min(lerp_y, self.max_y)
 
         # Center camera on the interpolated position
         camera_component.center_on(lerp_x, lerp_y, width, height)

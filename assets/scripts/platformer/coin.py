@@ -21,7 +21,7 @@ class Coin(ScriptComponent):
     def start(self):
         self.collided = False
 
-        self.sprite = Sprite("images/coins/coin0.png")
+        self.sprite = Sprite("images/coins/coin0.png", pixel_art_mode=True)
         trigger_collider = TriggerCollider(debug=False, layer="Coin", layer_mask=["Player"])
         self.game_object.add_component(self.sprite)
         self.game_object.add_component(trigger_collider)
