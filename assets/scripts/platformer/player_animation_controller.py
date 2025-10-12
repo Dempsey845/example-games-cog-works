@@ -65,6 +65,7 @@ class PlayerAnimationController(ScriptComponent):
 
         return mwx < pwx
 
+
     def on_attack(self):
         camera = self.camera_ref()
         if camera is None:
@@ -84,12 +85,26 @@ class PlayerAnimationController(ScriptComponent):
         dy = mouse_y - spawn_y
         angle = math.degrees(math.atan2(dy, dx))
 
+        # Clamp the angle to limit vertical movement
+        min_angle = -15  # Max down
+        max_angle = 15  # Max up
+
+        if mouse_on_left:
+            # Flip horizontally: mirror the angle
+            angle = 180 - angle
+            # Clamp after flipping
+            angle = max(180 - max_angle, min(180 - min_angle, angle))
+        else:
+            angle = max(min_angle, min(max_angle, angle))
+
         # Muzzle flash
         muzzle = GameObject("MuzzleFX", x=spawn_x, y=spawn_y)
         muzzle.add_component(MuzzleFlashParticleEffect())
 
-        # Bullet pointing toward mouse
-        bullet = GameObject("Bullet", x=spawn_x, y=spawn_y, scale_x=0.8, scale_y=0.8, rotation=angle, z_index=5)
+        # Bullet pointing toward clamped angle
+        bullet = GameObject(
+            "Bullet", x=spawn_x, y=spawn_y, scale_x=0.8, scale_y=0.8, rotation=angle, z_index=5
+        )
         bullet.add_component(Bullet())
 
         self.game_object.scene.instantiate_game_object(muzzle)
