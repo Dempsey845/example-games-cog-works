@@ -2,6 +2,7 @@ import random
 
 from cogworks.components.trigger_collider import TriggerCollider
 
+from assets.scripts.platformer.background_music import BackgroundMusic
 from assets.scripts.platformer.platform import Platform
 from assets.scripts.platformer.platformer_manager import PlatformerManager
 from assets.scripts.platformer.player import Player
@@ -27,6 +28,10 @@ def setup_physics_scene(engine):
     background.add_component(Sprite("images/star_background.png"))
     background.add_component(Background())
     main_scene.add_game_object(background)
+
+    background_music = GameObject("BackgroundMusic")
+    background_music.add_component(BackgroundMusic())
+    main_scene.add_game_object(background_music)
 
     # --- Player Setup ---
     player = GameObject(
@@ -55,7 +60,7 @@ def setup_physics_scene(engine):
 
     # --- Floor ---
     floor_width = 1000
-    ground_floor_count = 10
+    ground_floor_count = 20
     floors = [
     ]
 
@@ -68,9 +73,13 @@ def setup_physics_scene(engine):
         floors.append({"x": 0 + (floor_width * i), "y": window_height, "scale": 2})
         floors.append({"x": rand_x_offset + (floor_width * i), "y": rand_y, "scale": 1})
         if spawn_third:
-            rand_y = random.randint(-500, -450)
-            rand_x_offset = random.randint(-200, 100)
-            floors.append({"x": rand_x_offset + (floor_width * i), "y": rand_y, "scale": 1})
+            up_count = random.randint(2, 6)
+            for j in range(up_count):
+                rand_y = random.randint(-500 - (600 * j+1), -450 - (500 * j+1))
+                rand_x_offset = random.randint(-200, 100)
+                rand_scale = random.uniform(0.6, 1.4)
+                floors.append({"x": rand_x_offset + (floor_width * i), "y": rand_y, "scale": rand_scale})
+
 
     for i, floor in enumerate(floors):
         floor_object = GameObject(

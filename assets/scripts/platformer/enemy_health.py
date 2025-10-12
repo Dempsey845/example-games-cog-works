@@ -28,6 +28,8 @@ class EnemyHealth(ScriptComponent):
         blood.add_component(blood_effect)
         self.game_object.scene.instantiate_game_object(blood)
 
+        self.game_object.get_component("AudioSource").play_one_shot("sounds/growl.mp3")
+
         if self.current_health <= 0:
             self.game_object.destroy()
             return

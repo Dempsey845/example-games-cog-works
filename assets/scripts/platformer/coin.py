@@ -1,4 +1,5 @@
 from cogworks import GameObject
+from cogworks.components.audio_source import AudioSource
 
 from cogworks.components.sprite_animation import SpriteAnimation
 from cogworks.components.script_component import ScriptComponent
@@ -31,6 +32,8 @@ class Coin(ScriptComponent):
         sprite_animation.set_animation("Spin")
         self.game_object.add_component(sprite_animation)
 
+        self.game_object.add_component(AudioSource())
+
     def update(self, dt):
         if self.sprite:
             if self.collided:
@@ -48,4 +51,5 @@ class Coin(ScriptComponent):
             sparkle = GameObject("Blood Effect", x=x, y=y)
             sparkle.add_component(SparkleParticleEffect())
             self.game_object.scene.instantiate_game_object(sparkle)
+            self.game_object.get_component("AudioSource").play_one_shot("sounds/coin.mp3")
             self.collided = True

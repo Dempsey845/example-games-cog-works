@@ -2,6 +2,7 @@ import math
 import weakref
 from assets.scripts.platformer.bullet import Bullet
 from cogworks import GameObject
+from cogworks.components.audio_source import AudioSource
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
 from cogworks.components.sprite_animation import SpriteAnimation
@@ -93,6 +94,8 @@ class PlayerAnimationController(ScriptComponent):
 
         self.game_object.scene.instantiate_game_object(muzzle)
         self.game_object.scene.instantiate_game_object(bullet)
+
+        self.game_object.get_component(AudioSource).play_one_shot("sounds/shoot.mp3")
 
     def update(self, dt):
         x_vel, y_vel = self.platformer_movement.rigidbody.body.velocity

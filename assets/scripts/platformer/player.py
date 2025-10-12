@@ -5,6 +5,7 @@ from assets.scripts.platformer.platformer_movement import PlatformerMovement
 from assets.scripts.platformer.player_animation_controller import PlayerAnimationController
 from assets.scripts.platformer.player_coins import PlayerCoins
 from assets.scripts.platformer.player_health import PlayerHealth
+from cogworks.components.audio_source import AudioSource
 from cogworks.components.rigidbody2d import Rigidbody2D
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
@@ -58,6 +59,7 @@ class Player(ScriptComponent):
         go.add_component(PlayerHealth(fill_image=heart_fill_image.get_component(UIFillImage)))
         go.add_component(PlayerCoins(coin_counter_label))
         go.add_component(PlayerAnimationController())
+        go.add_component(AudioSource())
 
     def on_remove(self):
         Player.instance = None

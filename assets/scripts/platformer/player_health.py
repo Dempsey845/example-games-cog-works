@@ -42,6 +42,7 @@ class PlayerHealth(ScriptComponent):
         blood_effect = BloodParticleEffect()
         blood.add_component(blood_effect)
         self.game_object.scene.instantiate_game_object(blood)
+        self.game_object.get_component("AudioSource").play_one_shot("sounds/impact.mp3")
 
         fill_image = self.fill_image_ref()
         if fill_image:

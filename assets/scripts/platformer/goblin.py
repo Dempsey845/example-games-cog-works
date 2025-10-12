@@ -3,12 +3,13 @@ import weakref
 from assets.scripts.platformer.enemy_health import EnemyHealth
 from assets.scripts.platformer.player import Player
 from assets.scripts.platformer.player_health import PlayerHealth
+from cogworks.components.audio_source import AudioSource
 from cogworks.components.script_component import ScriptComponent
 from cogworks.components.sprite import Sprite
 from cogworks.components.sprite_animation import SpriteAnimation
 
 CHASE_DISTANCE_SQUARED = 700000
-ATTACK_DISTANCE_SQUARED = 28000
+ATTACK_DISTANCE_SQUARED = 38000
 WONDER_TIME = 15
 IDLE_TIME = 3
 PLAYER_Y_RANGE = 350
@@ -22,7 +23,7 @@ class Goblin(ScriptComponent):
         self.player_transform_ref = None
         self.sprite_animation = None
 
-        self.move_speed = 500
+        self.move_speed = 800
         self.edges = (0, 0)
         self.x = 0
         self.y = 0
@@ -48,7 +49,6 @@ class Goblin(ScriptComponent):
         self.x2 = 0
         self.y2 = 0
 
-
         if Player.instance:
             self.player_transform_ref = weakref.ref(Player.instance.game_object.transform)
 
@@ -62,10 +62,14 @@ class Goblin(ScriptComponent):
         self.sprite_animation.add_animation("Run", "images/goblin/run/run.png", 1, 6, 0.15)
 
         attack_anim = self.sprite_animation.add_animation("Attack", "images/goblin/attack/attack.png", 1, 6, 0.15)
-        attack_anim.add_event(3, self.attack)
+        attack_anim.add_event(2, self.attack)
 
         self.game_object.add_component(self.sprite_animation)
         self.game_object.add_component(EnemyHealth())
+
+        source = AudioSource()
+        source.max_distance = 100
+        self.game_object.add_component(source)
 
     def update(self, dt: float) -> None:
         self.x, self.y = self.transform.get_local_position()
@@ -164,6 +168,9 @@ class Goblin(ScriptComponent):
         self.transform.set_local_position(new_pos_x, self.y)
 
     def attack(self):
+        source = self.game_object.get_component(AudioSource)
+        source.play_one_shot("sounds/slash.mp3")
+
         player_health_ref = weakref.ref(self.player_transform_ref().game_object.get_component(PlayerHealth))
         if player_health_ref() and player_health_ref().exists():
             player_health_ref().take_damage(15)
