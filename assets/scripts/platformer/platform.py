@@ -45,7 +45,7 @@ class Platform(ScriptComponent):
         goblin_scale = 0.8
         goblin_size = 300 * goblin_scale
         goblin = GameObject("Goblin", z_index=1, x=x, y=y - platform_height//2 - goblin_size//2, scale_x=goblin_scale, scale_y=goblin_scale)
-        goblin.add_component(Sprite("images/goblin/goblin.png", offset_y=-50, scale_factor=0.8))
+        goblin.add_component(Sprite("images/goblin/goblin1.png", offset_y=-50, scale_factor=0.8))
         goblin.add_component(TriggerCollider(debug=False, width=150, height=250, layer="Enemy", layer_mask=["Bullet"]))
         goblin.add_component(Goblin(self))
         self.game_object.scene.instantiate_game_object(goblin)

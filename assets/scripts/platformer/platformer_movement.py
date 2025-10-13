@@ -45,7 +45,7 @@ class PlatformerMovement(ScriptComponent):
         if self.is_grounded:
             self.jump_count = 0
 
-        if rb._check_ceiling(10):
+        if rb.check_ceiling(10):
             self.jump_count = self.max_jumps
 
         # Jump logic

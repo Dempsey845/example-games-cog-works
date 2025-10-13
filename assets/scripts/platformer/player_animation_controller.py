@@ -75,27 +75,12 @@ class PlayerAnimationController(ScriptComponent):
         mx, my = self.input.get_mouse_position()
         mouse_x, mouse_y = camera.screen_to_world(mx, my)
 
-        # Original spawn point
+        # Spawn point and angle
         mouse_on_left = self.is_mouse_on_left()
         spawn_x = pwx - 200 if mouse_on_left else pwx + 200
         spawn_y = pwy - 100
 
-        # Angle from spawn to mouse
-        dx = mouse_x - spawn_x
-        dy = mouse_y - spawn_y
-        angle = math.degrees(math.atan2(dy, dx))
-
-        # Clamp the angle to limit vertical movement
-        min_angle = -15  # Max down
-        max_angle = 15  # Max up
-
-        if mouse_on_left:
-            # Flip horizontally: mirror the angle
-            angle = 180 - angle
-            # Clamp after flipping
-            angle = max(180 - max_angle, min(180 - min_angle, angle))
-        else:
-            angle = max(min_angle, min(max_angle, angle))
+        angle = 180 if mouse_on_left else 0
 
         # Muzzle flash
         muzzle = GameObject("MuzzleFX", x=spawn_x, y=spawn_y)
