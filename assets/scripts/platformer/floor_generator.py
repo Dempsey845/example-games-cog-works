@@ -29,7 +29,7 @@ class FloorGenerator(ScriptComponent):
             rand_y = random.randint(0, 50)
             floors.append(self._create_floor_data(rand_x, rand_y, scale=1))
 
-            # --- Upper platforms ---
+            # --- Optional upper platforms ---
             if random.random() < 0.7:  # 70% chance to spawn floating platforms
                 upper_count = random.randint(2, 5)
                 last_y = 0

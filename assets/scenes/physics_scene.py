@@ -1,15 +1,17 @@
-from cogworks.pygame_wrappers.window import Window
-from cogworks.components.background import Background
-from cogworks.components.ui.ui_button import UIButton
-from cogworks.components.ui.ui_transform import UITransform
-from cogworks.components.sprite import Sprite
-from cogworks.game_object import GameObject
-
-from assets.scripts.platformer.ball_spawner import BallSpawner
 from assets.scripts.platformer.floor_generator import FloorGenerator
+
 from assets.scripts.platformer.background_music import BackgroundMusic
 from assets.scripts.platformer.platformer_manager import PlatformerManager
 from assets.scripts.platformer.player import Player
+from cogworks.pygame_wrappers.window import Window
+
+from assets.scripts.platformer.ball_spawner import BallSpawner
+from cogworks.components.background import Background
+from cogworks.components.ui.ui_button import UIButton
+from cogworks.components.ui.ui_transform import UITransform
+from cogworks import GameObject
+from cogworks.components.sprite import Sprite
+from cogworks.components.rigidbody2d import Rigidbody2D
 from assets.scripts.camera_controller import CameraController
 
 
